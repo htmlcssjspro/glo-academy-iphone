@@ -73,6 +73,21 @@ const changeActiveTabs = $button => {
     changeContent($button.innerText);
 };
 
+
+const getData = () => {
+    fetch('https://jsonplaceholder.typicode.com/todos')
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Ошибка получения данных');
+            }
+        })
+        .then(data => {console.log(data);})
+        .catch(error => console.error(error))
+        .finally(console.log('finally'));
+};
+
 document.body.addEventListener('click', event => {
     event.preventDefault();
     const t = event.target;
@@ -88,6 +103,42 @@ document.body.addEventListener('click', event => {
      */
     const $button = t.closest('button.card-detail__change');
     $button && changeActiveTabs($button);
+
+    // characteristics__list
+    //     characteristics__item
+    //         characteristics__title
+    //         characteristics__description active
+
+    /**
+     * @type {HTMLElement}
+     */
+    const $chParent = t.closest('.characteristics__list');
+    /**
+     * @type {HTMLElement}
+     */
+    const $chItem = t.closest('.characteristics__item');
+
+    if ($chParent && $chItem) {
+        const $btn = $chItem.querySelector('.characteristics__title');
+        const $description = $chItem.querySelector('.characteristics__description');
+
+        const $active = $chParent.querySelector('.characteristics__title.active');
+        const $open = $chParent.querySelector('.characteristics__description.open');
+
+        $active && $active !== $btn && $active.classList.remove('active');
+
+        if ($open && $open !== $description) {
+            $open.classList.remove('open');
+            $open.style.height = '0px';
+        }
+
+        $btn.classList.toggle('active');
+        $description.classList.toggle('open');
+        $description.style.height = $description.classList.contains('open')
+            ? $description.scrollHeight + 'px' : '0px';
+    }
 });
 
+
 changeActiveTabs();
+getData();
